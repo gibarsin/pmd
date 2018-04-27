@@ -18,9 +18,9 @@ public enum ASTFixes {
         fileNameToFixes.put(fileName, new LinkedList<RuleViolationFix>());
     }
 
-    public void addViolation(final String fileName, final RuleViolationFix fix) {
+    public void addFix(final String fileName, final RuleViolationFix fix) {
         final Queue<RuleViolationFix> tuples = getApplicableFixes(fileName);
-        tuples.offer(fix);
+        tuples.offer(Objects.requireNonNull(fix));
     }
 
     private Queue<RuleViolationFix> getApplicableFixes(final String fileName) {

@@ -11,7 +11,7 @@ public abstract class AbstractFixableRuleViolationFactory extends AbstractRuleVi
     public void addViolationWithFix(final RuleContext ruleContext, final Rule rule, final Node node, final RuleViolationFix fix,
                                     String message, final Object[] args) {
         super.addViolation(ruleContext, rule, node, message, args);
-        ASTFixes.INSTANCE.addViolation(ruleContext.getSourceCodeFilename(), fix);
+        ASTFixes.INSTANCE.addFix(ruleContext.getSourceCodeFilename(), fix);
     }
 
     @Override
@@ -19,6 +19,6 @@ public abstract class AbstractFixableRuleViolationFactory extends AbstractRuleVi
                                     final RuleViolationFix fix, String message, final int beginLine, final int endLine,
                                     final Object[] args) {
         super.addViolation(ruleContext, rule, node, message, args);
-        ASTFixes.INSTANCE.addViolation(ruleContext.getSourceCodeFilename(), fix);
+        ASTFixes.INSTANCE.addFix(ruleContext.getSourceCodeFilename(), fix);
     }
 }
