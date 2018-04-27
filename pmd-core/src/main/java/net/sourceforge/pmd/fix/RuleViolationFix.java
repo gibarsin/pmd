@@ -4,6 +4,9 @@ import net.sourceforge.pmd.lang.ast.AbstractNode;
 
 import java.util.Objects;
 
+/**
+ * This IS GOING TO change, this is just to be used in {@link ASTFixes}.
+ */
 public abstract class RuleViolationFix {
     private final AbstractNode node;
 

@@ -10,6 +10,8 @@ import java.util.List;
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.RulePriority;
+import net.sourceforge.pmd.fix.FixableRuleViolationFactory;
+import net.sourceforge.pmd.fix.RuleViolationFix;
 import net.sourceforge.pmd.lang.Language;
 import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.lang.ParserOptions;
@@ -345,6 +347,17 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, this.getMessage(), null);
     }
 
+    public void addViolationWithFix(Object data, Node node, final RuleViolationFix fix) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, this.getMessage(), null);
+        } else {
+            factory.addViolation(ruleContext,this, node, getMessage(), null);
+        }
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
@@ -352,7 +365,18 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
     public void addViolation(Object data, Node node, String arg) {
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
-                this, node, this.getMessage(), new Object[]{arg});
+                this, node, getMessage(), new Object[]{arg});
+    }
+
+    public void addViolationWithFix(final Object data, Node node, final RuleViolationFix fix, final String arg) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, getMessage(), new Object[]{arg});
+        } else {
+            factory.addViolation(ruleContext,this, node, getMessage(), new Object[]{arg});
+        }
     }
 
     /**
@@ -362,7 +386,18 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
     public void addViolation(Object data, Node node, Object[] args) {
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
-                this, node, this.getMessage(), args);
+                this, node, getMessage(), args);
+    }
+
+    public void addViolationWithFix(final Object data, Node node, final RuleViolationFix fix, final Object[] args) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, getMessage(), args);
+        } else {
+            factory.addViolation(ruleContext,this, node, getMessage(), args);
+        }
     }
 
     /**
@@ -375,6 +410,17 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, message, null);
     }
 
+    public void addViolationWithMessageAndFix(final Object data, Node node, final RuleViolationFix fix, final String message) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, message, null);
+        } else {
+            factory.addViolation(ruleContext,this, node, message, null);
+        }
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
@@ -385,6 +431,17 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, message, beginLine, endLine, null);
     }
 
+    public void addViolationWithMessageAndFix(final Object data, Node node, final RuleViolationFix fix, final String message, final int beginLine, final int endLine) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, message, beginLine, endLine, null);
+        } else {
+            factory.addViolation(ruleContext,this, node, message, null);
+        }
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
@@ -393,6 +450,17 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
                 this, node, message, args);
+    }
+
+    public void addViolationWithMessageAndFix(final Object data, Node node, final RuleViolationFix fix, final String message, final Object[] args) {
+        final RuleContext ruleContext = (RuleContext) data;
+
+        final RuleViolationFactory factory = ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory();
+        if(factory instanceof FixableRuleViolationFactory) {
+            ((FixableRuleViolationFactory) factory).addViolationWithFix(ruleContext, this, node, fix, message, args);
+        } else {
+            factory.addViolation(ruleContext,this, node, message, args);
+        }
     }
 
     /**
