@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.sourceforge.pmd.fix.ASTFixes;
 import org.apache.commons.lang3.StringUtils;
 
 import net.sourceforge.pmd.benchmark.Benchmark;
@@ -57,7 +58,7 @@ public class RuleSet implements ChecksumAware {
 
     /**
      * Creates a new RuleSet with the given checksum.
-     * 
+     *
      * @param checksum
      *            A checksum of the ruleset, should change only if the ruleset
      *            was configured differently
@@ -500,6 +501,7 @@ public class RuleSet implements ChecksumAware {
                     rule.apply(acuList, ctx);
                     long end = System.nanoTime();
                     Benchmarker.mark(Benchmark.Rule, rule.getName(), end - start, 1);
+                    ASTFixes.INSTANCE.applyFixesToFileAST(ctx.getSourceCodeFilename());
                     start = end;
                 }
             } catch (RuntimeException e) {
