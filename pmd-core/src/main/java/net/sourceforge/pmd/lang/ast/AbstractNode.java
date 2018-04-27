@@ -5,7 +5,9 @@
 package net.sourceforge.pmd.lang.ast;
 
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -314,6 +316,36 @@ public abstract class AbstractNode implements Node {
             return document;
         } catch (ParserConfigurationException pce) {
             throw new RuntimeException(pce);
+        }
+    }
+
+    public String toSourceCode() {
+        if(firstToken == null) {
+            return "";
+        }
+
+        final StringBuilder sourceCode = new StringBuilder();
+        GenericToken currToken = firstToken;
+        do {
+            appendSpecialTokens(currToken.getPreviousComment(), sourceCode);
+            sourceCode.append(currToken.getImage());
+            currToken = currToken.getNext();
+        } while(currToken != lastToken);
+
+        return sourceCode.toString();
+    }
+
+    private void appendSpecialTokens(final GenericToken specialToken, final StringBuilder sourceCode) {
+        final Deque<GenericToken> specialTokens = new LinkedList<>();
+
+        GenericToken currSpecialToken = specialToken;
+        while(currSpecialToken != null) {
+            specialTokens.push(currSpecialToken);
+            currSpecialToken = currSpecialToken.getPreviousComment();
+        }
+
+        while(!specialTokens.isEmpty()) {
+            sourceCode.append(specialTokens.pop());
         }
     }
 
