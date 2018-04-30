@@ -107,6 +107,8 @@ public class PMDConfiguration extends AbstractConfiguration {
     private AnalysisCache analysisCache = new NoopAnalysisCache();
     private boolean ignoreIncrementalAnalysis;
 
+    private boolean isAutoFixes = false;
+
     /**
      * Get the suppress marker. This is the source level marker used to indicate
      * a RuleViolation should be suppressed.
@@ -623,5 +625,13 @@ public class PMDConfiguration extends AbstractConfiguration {
      */
     public boolean isIgnoreIncrementalAnalysis() {
         return ignoreIncrementalAnalysis;
+    }
+
+    public boolean isAutoFixes() {
+        return isAutoFixes;
+    }
+
+    public void setAutoFixes(boolean autoFixes) {
+        isAutoFixes = autoFixes;
     }
 }
