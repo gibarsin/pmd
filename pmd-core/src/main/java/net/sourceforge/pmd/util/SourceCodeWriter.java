@@ -20,7 +20,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public enum SourceCodeWriter {
     ;
 
-    public static void saveSourceCodeToFile(final String fileName, final Charset charset, final AbstractNode root) throws IOException {
+    public static void saveSyncedSourceCodeToFile(final String fileName, final Charset charset, final AbstractNode root) throws IOException {
         final Path temporaryPath = Files.createTempFile("pmd-", ".tmp");
         // TODO root.syncTokens()
         try (Writer writer = Files.newBufferedWriter(temporaryPath, charset)) {
@@ -32,10 +32,10 @@ public enum SourceCodeWriter {
 
     public static String getSyncedSourceCodeAsString(final AbstractNode root) throws IOException {
         // TODO root.syncTokens()
-        return getSourceCodeAsString(root);
+        return getOriginalSourceCodeAsString(root);
     }
 
-    public static String getSourceCodeAsString(final AbstractNode root) throws IOException {
+    public static String getOriginalSourceCodeAsString(final AbstractNode root) throws IOException {
         final StringBuilder sourceCode = new StringBuilder();
         writeSourceCode(sourceCode, root);
         return sourceCode.toString();

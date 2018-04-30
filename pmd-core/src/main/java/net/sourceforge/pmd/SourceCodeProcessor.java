@@ -10,7 +10,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sourceforge.pmd.benchmark.Benchmark;
 import net.sourceforge.pmd.benchmark.Benchmarker;
 import net.sourceforge.pmd.lang.Language;
@@ -25,6 +26,8 @@ import net.sourceforge.pmd.lang.xpath.Initializer;
 import net.sourceforge.pmd.util.SourceCodeWriter;
 
 public class SourceCodeProcessor {
+
+    private static final Logger LOG = Logger.getLogger(SourceCodeProcessor.class.getName());
 
     private final PMDConfiguration configuration;
 
@@ -190,11 +193,14 @@ public class SourceCodeProcessor {
         List<Node> acus = Collections.singletonList(rootNode);
         ruleSets.apply(acus, ctx, language);
 
-        if(rootNode instanceof AbstractNode) {
-            try {
-                SourceCodeWriter.saveSourceCodeToFile(ctx.getSourceCodeFilename(), configuration.getSourceEncoding(), (AbstractNode) rootNode);
-            } catch (final IOException e) {
-                // TODO report it
+        if (rootNode instanceof AbstractNode && configuration.isAutoFixes()) {
+            if(configuration.isIgnoreIncrementalAnalysis()) {
+                try {
+                    SourceCodeWriter.saveSyncedSourceCodeToFile(ctx.getSourceCodeFilename(),
+                            configuration.getSourceEncoding(), (AbstractNode) rootNode);
+                } catch (final IOException e) {
+                    LOG.log(Level.WARNING, "Error when attempting to store fixed source code file {0}", ctx.getSourceCodeFilename());
+                }
             }
         }
     }
