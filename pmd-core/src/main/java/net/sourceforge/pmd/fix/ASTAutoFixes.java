@@ -78,8 +78,10 @@ public enum ASTAutoFixes {
         @Override
         public void applyFixesToAST(final String fileName) {
             final Queue<RuleViolationFix> fixesToApply = fileNameToFixes.get(fileName);
-            while (fixesToApply != null && !fixesToApply.isEmpty()) {
-                fixesToApply.poll().apply();
+            if(fixesToApply != null) {
+                while (!fixesToApply.isEmpty()) {
+                    fixesToApply.poll().apply();
+                }
             }
         }
 
