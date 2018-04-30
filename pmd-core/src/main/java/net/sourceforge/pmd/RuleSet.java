@@ -500,8 +500,8 @@ public class RuleSet implements ChecksumAware {
                 if (!rule.isRuleChain() && applies(rule, ctx.getLanguageVersion())) {
                     rule.apply(acuList, ctx);
                     long end = System.nanoTime();
+                    ASTFixes.INSTANCE.applyFixesToAST(ctx.getSourceCodeFilename());
                     Benchmarker.mark(Benchmark.Rule, rule.getName(), end - start, 1);
-                    ASTFixes.INSTANCE.applyFixesToFileAST(ctx.getSourceCodeFilename());
                     start = end;
                 }
             } catch (RuntimeException e) {

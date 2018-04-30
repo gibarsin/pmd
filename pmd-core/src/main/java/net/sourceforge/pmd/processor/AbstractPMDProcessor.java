@@ -106,14 +106,8 @@ public abstract class AbstractPMDProcessor {
         configuration.getAnalysisCache().checkValidity(rs, configuration.getClassLoader());
         SourceCodeProcessor processor = new SourceCodeProcessor(configuration);
 
-        final String[] fileNames = getFileNamesFromFiles(files);
-
-        for (final String fileName : fileNames) {
-            ASTFixes.INSTANCE.addFileName(fileName);
-        }
-
-        for (int i = 0; i < files.size(); i++) {
-            runAnalysis(new PmdRunnable(files.get(i), fileNames[i], renderers, ctx, rs, processor));
+        for (final DataSource dataSource : files) {
+            runAnalysis(new PmdRunnable(dataSource, filenameFrom(dataSource), renderers, ctx, rs, processor));
         }
 
         // render base report first - general errors

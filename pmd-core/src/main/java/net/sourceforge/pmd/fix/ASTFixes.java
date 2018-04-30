@@ -1,40 +1,35 @@
 package net.sourceforge.pmd.fix;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public enum ASTFixes {
     INSTANCE;
 
-    private final Map<String, Queue<RuleViolationFix>> fileNameToFixes = new HashMap<>();
-
-    public void addFileName(final String fileName) {
-        if (fileNameToFixes.containsKey(Objects.requireNonNull(fileName))) {
-            throw new IllegalArgumentException("File name already exists in FilesRuleViolationsWithFixes: " + fileName);
-        }
-        fileNameToFixes.put(fileName, new LinkedList<RuleViolationFix>());
-    }
+    private final ConcurrentMap<String, Queue<RuleViolationFix>> fileNameToFixes = new ConcurrentHashMap<>();
 
     public void addFix(final String fileName, final RuleViolationFix fix) {
-        final Queue<RuleViolationFix> tuples = getApplicableFixes(fileName);
-        tuples.offer(Objects.requireNonNull(fix));
-    }
-
-    private Queue<RuleViolationFix> getApplicableFixes(final String fileName) {
-        final Queue<RuleViolationFix> tuples = fileNameToFixes.get(fileName);
-        if (tuples == null) {
-            throw new IllegalArgumentException("File name does not exist in FilesRuleViolationsWithFixes: " + fileName);
+        Objects.requireNonNull(fix); // Avoid potentially creating a new queue if the fix is null
+        final Queue<RuleViolationFix> potentialQueue = new ArrayDeque<>();
+        final Queue<RuleViolationFix> existingQueue = fileNameToFixes.putIfAbsent(fileName, potentialQueue);
+        if (existingQueue != null) {
+            existingQueue.offer(fix);
+        } else {
+            potentialQueue.offer(fix);
         }
-        return tuples;
     }
 
-    public void applyFixesToFileAST(final String fileName) {
-        final Queue<RuleViolationFix> fixesToApply = getApplicableFixes(fileName);
-        while (!fixesToApply.isEmpty()) {
+    public void applyFixesToAST(final String fileName) {
+        final Queue<RuleViolationFix> fixesToApply = fileNameToFixes.get(fileName);
+        while (fixesToApply != null && !fixesToApply.isEmpty()) {
             fixesToApply.poll().apply();
         }
+    }
+
+    public boolean areFixesAppliedToAST(final String fileName) {
+        return fileNameToFixes.containsKey(fileName);
     }
 }
