@@ -118,14 +118,6 @@ public abstract class AbstractPMDProcessor {
         collectReports(renderers);
     }
 
-    private String[] getFileNamesFromFiles(final List<DataSource> files) {
-        final String[] fileNames = new String[files.size()];
-        for(int i = 0; i < files.size(); i++) {
-            fileNames[i] = filenameFrom(files.get(i));
-        }
-        return fileNames;
-    }
-
     protected abstract void runAnalysis(PmdRunnable runnable);
 
     protected abstract void collectReports(List<Renderer> renderers);
