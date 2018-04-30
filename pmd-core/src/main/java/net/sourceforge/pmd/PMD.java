@@ -296,12 +296,14 @@ public class PMD {
     public static void processFiles(final PMDConfiguration configuration, final RuleSetFactory ruleSetFactory,
             final List<DataSource> files, final RuleContext ctx, final List<Renderer> renderers) {
 
-        if (!configuration.isIgnoreIncrementalAnalysis()
-                && configuration.getAnalysisCache() instanceof NoopAnalysisCache
-                && LOG.isLoggable(Level.WARNING)) {
+        if (!configuration.isIgnoreIncrementalAnalysis() && configuration.getAnalysisCache() instanceof NoopAnalysisCache) {
             final String version = PMDVersion.isUnknown() || PMDVersion.isSnapshot() ? "latest" : "pmd-" + PMDVersion.VERSION;
-            LOG.warning("This analysis could be faster, please consider using Incremental Analysis: "
-                                + "https://pmd.github.io/" + version + "/pmd_userdocs_getting_started.html#incremental-analysis");
+            LOG.log(Level.WARNING, "This analysis could be faster, please consider using Incremental Analysis: "
+                    + "https://pmd.github.io/{0}/pmd_userdocs_getting_started.html#incremental-analysis", version);
+            if (configuration.isAutoFixes()) {
+                LOG.warning("Incremental analysis with Autofixes isnot supported in this version. Autofixes will be disabled.");
+                configuration.setAutoFixes(false);
+            }
         }
 
         sortFiles(configuration, files);
