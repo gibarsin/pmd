@@ -30,15 +30,16 @@ public enum SourceCodeWriter {
         Files.move(temporaryPath, filePath, REPLACE_EXISTING); // Platform-independent
     }
 
-    public static String getSyncedSourceCodeAsString(final AbstractNode root) throws IOException {
-        // TODO root.syncTokens()
-        return getOriginalSourceCodeAsString(root);
-    }
-
-    public static String getOriginalSourceCodeAsString(final AbstractNode root) throws IOException {
+    public static String getASTSourceCodeAsString(final AbstractNode root) throws IOException {
         final StringBuilder sourceCode = new StringBuilder();
+        // TODO root.syncTokens()
         writeSourceCode(sourceCode, root);
         return sourceCode.toString();
+    }
+
+    public static String getSourceCodeFileAsString(final String fileName, final Charset charset) throws IOException {
+        final byte[] sourceCodeBytes = Files.readAllBytes(Paths.get(fileName));
+        return new String(sourceCodeBytes, charset);
     }
 
     private static void writeSourceCode(final Appendable sourceCode, final AbstractNode root) throws IOException {

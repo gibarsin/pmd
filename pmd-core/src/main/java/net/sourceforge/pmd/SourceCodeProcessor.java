@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import net.sourceforge.pmd.lang.ast.AbstractNode;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.ast.ParseException;
 import net.sourceforge.pmd.lang.xpath.Initializer;
+import net.sourceforge.pmd.util.DiffMatchPatch;
 import net.sourceforge.pmd.util.SourceCodeWriter;
 
 public class SourceCodeProcessor {
@@ -193,13 +195,35 @@ public class SourceCodeProcessor {
         List<Node> acus = Collections.singletonList(rootNode);
         ruleSets.apply(acus, ctx, language);
 
-        if (rootNode instanceof AbstractNode && configuration.isAutoFixes()) {
-            if(configuration.isIgnoreIncrementalAnalysis()) {
+        if (rootNode instanceof AbstractNode) {
+            processAutoFixes((AbstractNode) rootNode, ctx);
+        }
+    }
+
+    private void processAutoFixes(final AbstractNode rootNode, final RuleContext ctx) {
+        if (configuration.isAutoFixes()) {
+            if (configuration.isIgnoreIncrementalAnalysis()) {
                 try {
                     SourceCodeWriter.saveSyncedSourceCodeToFile(ctx.getSourceCodeFilename(),
-                            configuration.getSourceEncoding(), (AbstractNode) rootNode);
+                            configuration.getSourceEncoding(), rootNode);
                 } catch (final IOException e) {
-                    LOG.log(Level.WARNING, "Error when attempting to store fixed source code file {0}", ctx.getSourceCodeFilename());
+                    LOG.log(Level.WARNING, "Error when attempting to store fixed source code into file {0}",
+                            ctx.getSourceCodeFilename());
+                }
+            } else {
+                try {
+                    final String originalSource = SourceCodeWriter.getSourceCodeFileAsString(ctx.getSourceCodeFilename(),
+                            configuration.getSourceEncoding());
+                    final String fixedSourceCode = SourceCodeWriter.getASTSourceCodeAsString(rootNode);
+
+                    final DiffMatchPatch diffEngine = new DiffMatchPatch();
+                    final LinkedList<DiffMatchPatch.Diff> diffs = diffEngine.diff_main(originalSource, fixedSourceCode);
+                    diffEngine.diff_cleanupEfficiency(diffs);
+                    final LinkedList<DiffMatchPatch.Patch> patches = diffEngine.patch_make(diffs);
+                    // TODO Save list of patches to cache
+                } catch (final IOException e) {
+                    LOG.log(Level.WARNING, "Error when attempting to retrieve original source code file {0}",
+                            ctx.getSourceCodeFilename());
                 }
             }
         }
