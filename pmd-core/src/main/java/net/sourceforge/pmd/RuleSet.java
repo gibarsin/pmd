@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.sourceforge.pmd.fix.ASTFixes;
+import net.sourceforge.pmd.fix.ASTAutoFixes;
 import org.apache.commons.lang3.StringUtils;
 
 import net.sourceforge.pmd.benchmark.Benchmark;
@@ -500,7 +500,7 @@ public class RuleSet implements ChecksumAware {
                 if (!rule.isRuleChain() && applies(rule, ctx.getLanguageVersion())) {
                     rule.apply(acuList, ctx);
                     long end = System.nanoTime();
-                    ASTFixes.INSTANCE.applyFixesToAST(ctx.getSourceCodeFilename());
+                    ASTAutoFixes.INSTANCE.applyFixesToAST(ctx.getSourceCodeFilename());
                     Benchmarker.mark(Benchmark.Rule, rule.getName(), end - start, 1);
                     start = end;
                 }

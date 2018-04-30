@@ -21,7 +21,7 @@ import net.sourceforge.pmd.RulesetsFactoryUtils;
 import net.sourceforge.pmd.SourceCodeProcessor;
 import net.sourceforge.pmd.benchmark.Benchmark;
 import net.sourceforge.pmd.benchmark.Benchmarker;
-import net.sourceforge.pmd.fix.ASTFixes;
+import net.sourceforge.pmd.fix.ASTAutoFixes;
 import net.sourceforge.pmd.renderers.Renderer;
 import net.sourceforge.pmd.util.datasource.DataSource;
 
@@ -105,6 +105,7 @@ public abstract class AbstractPMDProcessor {
         RuleSets rs = createRuleSets(ruleSetFactory, ctx.getReport());
         configuration.getAnalysisCache().checkValidity(rs, configuration.getClassLoader());
         SourceCodeProcessor processor = new SourceCodeProcessor(configuration);
+        ASTAutoFixes.INSTANCE.setAutoFixes(configuration.isAutoFixes());
 
         for (final DataSource dataSource : files) {
             runAnalysis(new PmdRunnable(dataSource, filenameFrom(dataSource), renderers, ctx, rs, processor));
