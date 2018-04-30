@@ -18,9 +18,11 @@ import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.lang.LanguageVersionHandler;
 import net.sourceforge.pmd.lang.Parser;
 import net.sourceforge.pmd.lang.VisitorStarter;
+import net.sourceforge.pmd.lang.ast.AbstractNode;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.ast.ParseException;
 import net.sourceforge.pmd.lang.xpath.Initializer;
+import net.sourceforge.pmd.util.SourceCodeWriter;
 
 public class SourceCodeProcessor {
 
@@ -172,12 +174,12 @@ public class SourceCodeProcessor {
     }
 
 
-    private void processSource(Reader sourceCode, RuleSets ruleSets, RuleContext ctx) {
+    private void processSource(Reader sourceCodeReader, RuleSets ruleSets, RuleContext ctx) {
         LanguageVersion languageVersion = ctx.getLanguageVersion();
         LanguageVersionHandler languageVersionHandler = languageVersion.getLanguageVersionHandler();
         Parser parser = PMD.parserFor(languageVersion, configuration);
 
-        Node rootNode = parse(ctx, sourceCode, parser);
+        Node rootNode = parse(ctx, sourceCodeReader, parser);
         resolveQualifiedNames(rootNode, languageVersionHandler);
         symbolFacade(rootNode, languageVersionHandler);
         Language language = languageVersion.getLanguage();
@@ -187,6 +189,14 @@ public class SourceCodeProcessor {
 
         List<Node> acus = Collections.singletonList(rootNode);
         ruleSets.apply(acus, ctx, language);
+
+        if(rootNode instanceof AbstractNode) {
+            try {
+                SourceCodeWriter.saveSourceCodeToFile(ctx.getSourceCodeFilename(), configuration.getSourceEncoding(), (AbstractNode) rootNode);
+            } catch (final IOException e) {
+                // TODO report it
+            }
+        }
     }
 
     private void determineLanguage(RuleContext ctx) {

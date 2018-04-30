@@ -319,36 +319,6 @@ public abstract class AbstractNode implements Node {
         }
     }
 
-    public String toSourceCode() {
-        if(firstToken == null) {
-            return "";
-        }
-
-        final StringBuilder sourceCode = new StringBuilder();
-        GenericToken currToken = firstToken;
-        do {
-            appendSpecialTokens(currToken.getPreviousComment(), sourceCode);
-            sourceCode.append(currToken.getImage());
-            currToken = currToken.getNext();
-        } while(currToken != lastToken);
-
-        return sourceCode.toString();
-    }
-
-    private void appendSpecialTokens(final GenericToken specialToken, final StringBuilder sourceCode) {
-        final Deque<GenericToken> specialTokens = new LinkedList<>();
-
-        GenericToken currSpecialToken = specialToken;
-        while(currSpecialToken != null) {
-            specialTokens.push(currSpecialToken);
-            currSpecialToken = currSpecialToken.getPreviousComment();
-        }
-
-        while(!specialTokens.isEmpty()) {
-            sourceCode.append(specialTokens.pop());
-        }
-    }
-
     protected void appendElement(org.w3c.dom.Node parentNode) {
         DocumentNavigator docNav = new DocumentNavigator();
         Document ownerDocument = parentNode.getOwnerDocument();
