@@ -4,6 +4,18 @@
 
 package net.sourceforge.pmd;
 
+import net.sourceforge.pmd.benchmark.Benchmark;
+import net.sourceforge.pmd.benchmark.Benchmarker;
+import net.sourceforge.pmd.cache.AbstractAnalysisCache;
+import net.sourceforge.pmd.cache.AnalysisCache;
+import net.sourceforge.pmd.lang.*;
+import net.sourceforge.pmd.lang.ast.AbstractNode;
+import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.ast.ParseException;
+import net.sourceforge.pmd.lang.xpath.Initializer;
+import net.sourceforge.pmd.util.DiffMatchPatch;
+import net.sourceforge.pmd.util.SourceCodeWriter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,19 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.sourceforge.pmd.benchmark.Benchmark;
-import net.sourceforge.pmd.benchmark.Benchmarker;
-import net.sourceforge.pmd.lang.Language;
-import net.sourceforge.pmd.lang.LanguageVersion;
-import net.sourceforge.pmd.lang.LanguageVersionHandler;
-import net.sourceforge.pmd.lang.Parser;
-import net.sourceforge.pmd.lang.VisitorStarter;
-import net.sourceforge.pmd.lang.ast.AbstractNode;
-import net.sourceforge.pmd.lang.ast.Node;
-import net.sourceforge.pmd.lang.ast.ParseException;
-import net.sourceforge.pmd.lang.xpath.Initializer;
-import net.sourceforge.pmd.util.DiffMatchPatch;
-import net.sourceforge.pmd.util.SourceCodeWriter;
+
+import static net.sourceforge.pmd.util.DiffMatchPatch.Patch;
 
 public class SourceCodeProcessor {
 
@@ -94,6 +95,7 @@ public class SourceCodeProcessor {
                 for (final RuleViolation rv : configuration.getAnalysisCache().getCachedViolations(ctx.getSourceCodeFile())) {
                     ctx.getReport().addRuleViolation(rv);
                 }
+                processCachedAutoFixes(ctx);
                 return;
             }
 
@@ -108,6 +110,21 @@ public class SourceCodeProcessor {
                 throw new PMDException("Error while processing " + ctx.getSourceCodeFilename(), e);
             } finally {
                 ruleSets.end(ctx);
+            }
+        }
+    }
+
+    private void processCachedAutoFixes(final RuleContext ctx) {
+        if (configuration.isAutoFixes()) {
+            final AnalysisCache cache = configuration.getAnalysisCache();
+            if (cache instanceof AbstractAnalysisCache) {
+                final List<Patch> patches = ((AbstractAnalysisCache) cache).getPatches(ctx.getSourceCodeFile());
+                try {
+                    SourceCodeWriter.applyPatchesToOriginalSourceCodeFile(ctx.getSourceCodeFilename(), configuration.getSourceEncoding(), patches);
+                } catch (final IOException e) {
+                    LOG.log(Level.WARNING, "I/O Error when attempting to apply patches to source code file {0}",
+                            ctx.getSourceCodeFilename());
+                }
             }
         }
     }
@@ -196,34 +213,35 @@ public class SourceCodeProcessor {
         ruleSets.apply(acus, ctx, language);
 
         if (rootNode instanceof AbstractNode) {
-            processAutoFixes((AbstractNode) rootNode, ctx);
+            processCachedAutoFixes((AbstractNode) rootNode, ctx);
         }
     }
 
-    private void processAutoFixes(final AbstractNode rootNode, final RuleContext ctx) {
+    private void processCachedAutoFixes(final AbstractNode rootNode, final RuleContext ctx) {
         if (configuration.isAutoFixes()) {
             if (configuration.isIgnoreIncrementalAnalysis()) {
                 try {
                     SourceCodeWriter.saveSyncedSourceCodeToFile(ctx.getSourceCodeFilename(),
                             configuration.getSourceEncoding(), rootNode);
                 } catch (final IOException e) {
-                    LOG.log(Level.WARNING, "Error when attempting to store fixed source code into file {0}",
+                    LOG.log(Level.WARNING, "I/O Error when attempting to store fixed source code into file {0}",
                             ctx.getSourceCodeFilename());
                 }
             } else {
-                try {
-                    final String originalSource = SourceCodeWriter.getSourceCodeFileAsString(ctx.getSourceCodeFilename(),
-                            configuration.getSourceEncoding());
-                    final String fixedSourceCode = SourceCodeWriter.getASTSourceCodeAsString(rootNode);
+                if (configuration.getAnalysisCache() instanceof AbstractAnalysisCache) {
+                    final AbstractAnalysisCache cache = (AbstractAnalysisCache) configuration.getAnalysisCache();
+                    try {
+                        final String originalSource = SourceCodeWriter.getSourceCodeFileAsString(ctx.getSourceCodeFilename(),
+                                configuration.getSourceEncoding());
+                        final String fixedSourceCode = SourceCodeWriter.getASTSourceCodeAsString(rootNode);
 
-                    final DiffMatchPatch diffEngine = new DiffMatchPatch();
-                    final LinkedList<DiffMatchPatch.Diff> diffs = diffEngine.diff_main(originalSource, fixedSourceCode);
-                    diffEngine.diff_cleanupEfficiency(diffs);
-                    final LinkedList<DiffMatchPatch.Patch> patches = diffEngine.patch_make(diffs);
-                    // TODO Save list of patches to cache
-                } catch (final IOException e) {
-                    LOG.log(Level.WARNING, "Error when attempting to retrieve original source code file {0}",
-                            ctx.getSourceCodeFilename());
+                        final DiffMatchPatch diffEngine = new DiffMatchPatch();
+                        final LinkedList<Patch> patches = diffEngine.makePatches(originalSource, fixedSourceCode);
+                        cache.setPatches(ctx.getSourceCodeFile(), patches);
+                    } catch (final IOException e) {
+                        LOG.log(Level.WARNING, "I/O Error when attempting to retrieve original source code file {0}",
+                                ctx.getSourceCodeFilename());
+                    }
                 }
             }
         }

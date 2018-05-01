@@ -17,9 +17,10 @@ package net.sourceforge.pmd.util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1764,9 +1765,9 @@ public class DiffMatchPatch {
      * @param text2 New text.
      * @return LinkedList of Patch objects.
      */
-    public LinkedList<Patch> patch_make(String text1, String text2) {
+    public LinkedList<Patch> makePatches(String text1, String text2) {
         if (text1 == null || text2 == null) {
-            throw new IllegalArgumentException("Null inputs. (patch_make)");
+            throw new IllegalArgumentException("Null inputs. (makePatches)");
         }
         // No diffs provided, compute our own.
         LinkedList<Diff> diffs = diff_main(text1, text2, true);
@@ -1774,7 +1775,7 @@ public class DiffMatchPatch {
             diff_cleanupSemantic(diffs);
             diff_cleanupEfficiency(diffs);
         }
-        return patch_make(text1, diffs);
+        return makePatches(text1, diffs);
     }
 
     /**
@@ -1783,13 +1784,13 @@ public class DiffMatchPatch {
      * @param diffs Array of Diff objects for text1 to text2.
      * @return LinkedList of Patch objects.
      */
-    public LinkedList<Patch> patch_make(LinkedList<Diff> diffs) {
+    public LinkedList<Patch> makePatches(LinkedList<Diff> diffs) {
         if (diffs == null) {
-            throw new IllegalArgumentException("Null inputs. (patch_make)");
+            throw new IllegalArgumentException("Null inputs. (makePatches)");
         }
         // No origin string provided, compute our own.
         String text1 = diff_text1(diffs);
-        return patch_make(text1, diffs);
+        return makePatches(text1, diffs);
     }
 
     /**
@@ -1799,11 +1800,11 @@ public class DiffMatchPatch {
      * @param text2 Ignored.
      * @param diffs Array of Diff objects for text1 to text2.
      * @return LinkedList of Patch objects.
-     * @deprecated Prefer patch_make(String text1, LinkedList<Diff> diffs).
+     * @deprecated Prefer makePatches(String text1, LinkedList<Diff> diffs).
      */
-    public LinkedList<Patch> patch_make(String text1, String text2,
-                                        LinkedList<Diff> diffs) {
-        return patch_make(text1, diffs);
+    public LinkedList<Patch> makePatches(String text1, String text2,
+                                         LinkedList<Diff> diffs) {
+        return makePatches(text1, diffs);
     }
 
     /**
@@ -1813,9 +1814,9 @@ public class DiffMatchPatch {
      * @param diffs Array of Diff objects for text1 to text2.
      * @return LinkedList of Patch objects.
      */
-    public LinkedList<Patch> patch_make(String text1, LinkedList<Diff> diffs) {
+    public LinkedList<Patch> makePatches(String text1, LinkedList<Diff> diffs) {
         if (text1 == null || diffs == null) {
-            throw new IllegalArgumentException("Null inputs. (patch_make)");
+            throw new IllegalArgumentException("Null inputs. (makePatches)");
         }
 
         LinkedList<Patch> patches = new LinkedList<Patch>();
@@ -1898,7 +1899,7 @@ public class DiffMatchPatch {
      * @param patches Array of Patch objects.
      * @return Array of Patch objects.
      */
-    public LinkedList<Patch> patch_deepCopy(LinkedList<Patch> patches) {
+    public LinkedList<Patch> patch_deepCopy(final List<Patch> patches) {
         LinkedList<Patch> patchesCopy = new LinkedList<Patch>();
         for (Patch aPatch : patches) {
             Patch patchCopy = new Patch();
@@ -1923,7 +1924,7 @@ public class DiffMatchPatch {
      * @return Two element Object array, containing the new text and an array of
      *      boolean values.
      */
-    public Object[] patch_apply(LinkedList<Patch> patches, String text) {
+    public Object[] applyPatches(List<Patch> patches, String text) {
         if (patches.isEmpty()) {
             return new Object[]{text, new boolean[0]};
         }
@@ -2028,11 +2029,11 @@ public class DiffMatchPatch {
 
     /**
      * Add some padding on text start and end so that edges can match something.
-     * Intended to be called only from within patch_apply.
+     * Intended to be called only from within applyPatches.
      * @param patches Array of Patch objects.
      * @return The padding string added to each side.
      */
-    public String patch_addPadding(LinkedList<Patch> patches) {
+    public String patch_addPadding(List<Patch> patches) {
         short paddingLength = this.Patch_Margin;
         String nullPadding = "";
         for (short x = 1; x <= paddingLength; x++) {
@@ -2046,7 +2047,7 @@ public class DiffMatchPatch {
         }
 
         // Add some padding on start of first diff.
-        Patch patch = patches.getFirst();
+        Patch patch = patches.get(0);
         LinkedList<Diff> diffs = patch.diffs;
         if (diffs.isEmpty() || diffs.getFirst().operation != Operation.EQUAL) {
             // Add nullPadding equality.
@@ -2068,7 +2069,7 @@ public class DiffMatchPatch {
         }
 
         // Add some padding on end of last diff.
-        patch = patches.getLast();
+        patch = patches.get(patches.size() - 1);
         diffs = patch.diffs;
         if (diffs.isEmpty() || diffs.getLast().operation != Operation.EQUAL) {
             // Add nullPadding equality.
@@ -2090,10 +2091,10 @@ public class DiffMatchPatch {
     /**
      * Look through the patches and break up any which are longer than the
      * maximum limit of the match algorithm.
-     * Intended to be called only from within patch_apply.
+     * Intended to be called only from within applyPatches.
      * @param patches LinkedList of Patch objects.
      */
-    public void patch_splitMax(LinkedList<Patch> patches) {
+    public void patch_splitMax(List<Patch> patches) {
         short patch_size = Match_MaxBits;
         String precontext, postcontext;
         Patch patch;
@@ -2191,114 +2192,6 @@ public class DiffMatchPatch {
         }
     }
 
-    /**
-     * Take a list of patches and return a textual representation.
-     * @param patches List of Patch objects.
-     * @return Text representation of patches.
-     */
-    public String patch_toText(List<Patch> patches) {
-        StringBuilder text = new StringBuilder();
-        for (Patch aPatch : patches) {
-            text.append(aPatch);
-        }
-        return text.toString();
-    }
-
-    /**
-     * Parse a textual representation of patches and return a List of Patch
-     * objects.
-     * @param textline Text representation of patches.
-     * @return List of Patch objects.
-     * @throws IllegalArgumentException If invalid input.
-     */
-    public List<Patch> patch_fromText(String textline)
-            throws IllegalArgumentException {
-        List<Patch> patches = new LinkedList<Patch>();
-        if (textline.length() == 0) {
-            return patches;
-        }
-        List<String> textList = Arrays.asList(textline.split("\n"));
-        LinkedList<String> text = new LinkedList<String>(textList);
-        Patch patch;
-        Pattern patchHeader
-                = Pattern.compile("^@@ -(\\d+),?(\\d*) \\+(\\d+),?(\\d*) @@$");
-        Matcher m;
-        char sign;
-        String line;
-        while (!text.isEmpty()) {
-            m = patchHeader.matcher(text.getFirst());
-            if (!m.matches()) {
-                throw new IllegalArgumentException(
-                        "Invalid patch string: " + text.getFirst());
-            }
-            patch = new Patch();
-            patches.add(patch);
-            patch.start1 = Integer.parseInt(m.group(1));
-            if (m.group(2).length() == 0) {
-                patch.start1--;
-                patch.length1 = 1;
-            } else if (m.group(2).equals("0")) {
-                patch.length1 = 0;
-            } else {
-                patch.start1--;
-                patch.length1 = Integer.parseInt(m.group(2));
-            }
-
-            patch.start2 = Integer.parseInt(m.group(3));
-            if (m.group(4).length() == 0) {
-                patch.start2--;
-                patch.length2 = 1;
-            } else if (m.group(4).equals("0")) {
-                patch.length2 = 0;
-            } else {
-                patch.start2--;
-                patch.length2 = Integer.parseInt(m.group(4));
-            }
-            text.removeFirst();
-
-            while (!text.isEmpty()) {
-                try {
-                    sign = text.getFirst().charAt(0);
-                } catch (IndexOutOfBoundsException e) {
-                    // Blank line?  Whatever.
-                    text.removeFirst();
-                    continue;
-                }
-                line = text.getFirst().substring(1);
-                line = line.replace("+", "%2B");  // decode would change all "+" to " "
-                try {
-                    line = URLDecoder.decode(line, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    // Not likely on modern system.
-                    throw new Error("This system does not support UTF-8.", e);
-                } catch (IllegalArgumentException e) {
-                    // Malformed URI sequence.
-                    throw new IllegalArgumentException(
-                            "Illegal escape in patch_fromText: " + line, e);
-                }
-                if (sign == '-') {
-                    // Deletion.
-                    patch.diffs.add(new Diff(Operation.DELETE, line));
-                } else if (sign == '+') {
-                    // Insertion.
-                    patch.diffs.add(new Diff(Operation.INSERT, line));
-                } else if (sign == ' ') {
-                    // Minor equality.
-                    patch.diffs.add(new Diff(Operation.EQUAL, line));
-                } else if (sign == '@') {
-                    // Start of next patch.
-                    break;
-                } else {
-                    // WTF?
-                    throw new IllegalArgumentException(
-                            "Invalid patch mode '" + sign + "' in: " + line);
-                }
-                text.removeFirst();
-            }
-        }
-        return patches;
-    }
-
 
     /**
      * Class representing one diff operation.
@@ -2318,7 +2211,7 @@ public class DiffMatchPatch {
          * @param operation One of INSERT, DELETE or EQUAL.
          * @param text The text being applied.
          */
-        public Diff(Operation operation, String text) {
+        /* default */ Diff(Operation operation, String text) {
             // Construct a diff with the specified operation and text.
             this.operation = operation;
             this.text = text;
@@ -2352,7 +2245,7 @@ public class DiffMatchPatch {
          * @return true or false.
          */
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -2362,18 +2255,15 @@ public class DiffMatchPatch {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            Diff other = (Diff) obj;
+            final Diff other = (Diff) obj;
             if (operation != other.operation) {
                 return false;
             }
             if (text == null) {
-                if (other.text != null) {
-                    return false;
-                }
-            } else if (!text.equals(other.text)) {
-                return false;
+                return other.text == null;
+            } else {
+                return text.equals(other.text);
             }
-            return true;
         }
     }
 
@@ -2382,17 +2272,125 @@ public class DiffMatchPatch {
      * Class representing one patch operation.
      */
     public static class Patch {
-        public LinkedList<Diff> diffs;
-        public int start1;
-        public int start2;
-        public int length1;
-        public int length2;
+        /* default */ LinkedList<Diff> diffs;
+        /* default */  int start1;
+        /* default */  int start2;
+        /* default */  int length1;
+        /* default */  int length2;
 
         /**
          * Constructor.  Initializes with an empty list of diffs.
          */
         public Patch() {
-            this.diffs = new LinkedList<Diff>();
+            this.diffs = new LinkedList<>();
+        }
+
+        /**
+         * Take a list of patches and return a textual representation.
+         * @param patches List of Patch objects.
+         * @return Text representation of patches.
+         */
+        public static String fromPatchesToString(final List<Patch> patches) {
+            final StringBuilder patchesText = new StringBuilder();
+            for (final Patch patch : patches) {
+                patchesText.append(patch);
+            }
+            return patchesText.toString();
+        }
+
+        /**
+         * Parse a textual representation of patches and return a List of Patch
+         * objects.
+         * @param patchesText Text representation of patches.
+         * @return List of Patch objects.
+         * @throws IllegalArgumentException If invalid input.
+         */
+        public static List<Patch> fromStringToPatches(final String patchesText)
+                throws IllegalArgumentException {
+            List<Patch> patches = new LinkedList<Patch>();
+            if (patchesText.length() == 0) {
+                return patches;
+            }
+            List<String> textList = Arrays.asList(patchesText.split("\n"));
+            LinkedList<String> text = new LinkedList<String>(textList);
+            Patch patch;
+            Pattern patchHeader
+                    = Pattern.compile("^@@ -(\\d+),?(\\d*) \\+(\\d+),?(\\d*) @@$");
+            Matcher m;
+            char sign;
+            String line;
+            while (!text.isEmpty()) {
+                m = patchHeader.matcher(text.getFirst());
+                if (!m.matches()) {
+                    throw new IllegalArgumentException(
+                            "Invalid patch string: " + text.getFirst());
+                }
+                patch = new Patch();
+                patches.add(patch);
+                patch.start1 = Integer.parseInt(m.group(1));
+                if (m.group(2).length() == 0) {
+                    patch.start1--;
+                    patch.length1 = 1;
+                } else if (m.group(2).equals("0")) {
+                    patch.length1 = 0;
+                } else {
+                    patch.start1--;
+                    patch.length1 = Integer.parseInt(m.group(2));
+                }
+
+                patch.start2 = Integer.parseInt(m.group(3));
+                if (m.group(4).length() == 0) {
+                    patch.start2--;
+                    patch.length2 = 1;
+                } else if (m.group(4).equals("0")) {
+                    patch.length2 = 0;
+                } else {
+                    patch.start2--;
+                    patch.length2 = Integer.parseInt(m.group(4));
+                }
+                text.removeFirst();
+
+                while (!text.isEmpty()) {
+                    try {
+                        sign = text.getFirst().charAt(0);
+                    } catch (IndexOutOfBoundsException e) {
+                        // Blank line?  Whatever.
+                        text.removeFirst();
+                        continue;
+                    }
+                    line = text.getFirst().substring(1);
+                    line = line.replace("+", "%2B");  // decode would change all "+" to " "
+                    try {
+                        line = URLDecoder.decode(line, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        // Not likely on modern system.
+                        throw new Error("This system does not support UTF-8.", e);
+                    } catch (IllegalArgumentException e) {
+                        // Malformed URI sequence.
+                        throw new IllegalArgumentException(
+                                "Illegal escape in patch_fromText: " + line, e);
+                    }
+                    if (sign == '-') {
+                        // Deletion.
+                        patch.diffs.add(new Diff(Operation.DELETE, line));
+                    } else if (sign == '+') {
+                        // Insertion.
+                        patch.diffs.add(new Diff(Operation.INSERT, line));
+                    } else if (sign == ' ') {
+                        // Minor equality.
+                        patch.diffs.add(new Diff(Operation.EQUAL, line));
+                    } else if (sign == '@') {
+                        // Start of next patch.
+                        break;
+                    } else {
+                        // WTF?
+                        throw new IllegalArgumentException(
+                                "Invalid patch mode '" + sign + "' in: " + line);
+                    }
+                    text.removeFirst();
+                }
+            }
+            return patches;
         }
 
         /**

@@ -20,6 +20,8 @@ import java.util.Map;
 import net.sourceforge.pmd.PMDVersion;
 import net.sourceforge.pmd.RuleViolation;
 
+import static net.sourceforge.pmd.util.DiffMatchPatch.*;
+
 /**
  * An analysis cache backed by a regular file.
  */
@@ -68,8 +70,9 @@ public class FileAnalysisCache extends AbstractAnalysisCache {
                         for (int i = 0; i < countViolations; i++) {
                             violations.add(CachedRuleViolation.loadFromStream(inputStream, fileName, ruleMapper));
                         }
+                        final String patches = inputStream.readUTF();
 
-                        fileResultsCache.put(fileName, new AnalysisResult(checksum, violations));
+                        fileResultsCache.put(fileName, new AnalysisResult(checksum, violations, Patch.fromStringToPatches(patches)));
                     }
 
                     LOG.info("Analysis cache loaded");
@@ -114,6 +117,7 @@ public class FileAnalysisCache extends AbstractAnalysisCache {
                 for (final RuleViolation rv : violations) {
                     CachedRuleViolation.storeToStream(outputStream, rv);
                 }
+                outputStream.writeUTF(Patch.fromPatchesToString(resultEntry.getValue().getPatches()));
             }
             
             LOG.info("Analysis cache updated");

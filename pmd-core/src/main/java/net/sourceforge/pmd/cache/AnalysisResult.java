@@ -10,12 +10,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.io.IOUtils;
 
 import net.sourceforge.pmd.RuleViolation;
+
+import static net.sourceforge.pmd.util.DiffMatchPatch.*;
 
 /**
  * The result of a single file analysis.
@@ -25,10 +28,16 @@ public class AnalysisResult {
 
     private final long fileChecksum;
     private final List<RuleViolation> violations;
+    private List<Patch> patches;
 
     public AnalysisResult(final long fileChecksum, final List<RuleViolation> violations) {
         this.fileChecksum = fileChecksum;
         this.violations = violations;
+    }
+
+    public AnalysisResult(final long fileChecksum, final List<RuleViolation> violations, final List<Patch> patches) {
+        this(fileChecksum, violations);
+        this.patches = Objects.requireNonNull(patches);
     }
 
     public AnalysisResult(final File sourceFile) {
@@ -66,5 +75,13 @@ public class AnalysisResult {
 
     public void addViolation(final RuleViolation ruleViolation) {
         this.violations.add(ruleViolation);
+    }
+
+    public List<Patch> getPatches() {
+        return patches;
+    }
+
+    public void setPatches(final List<Patch> patches) {
+        this.patches = patches;
     }
 }

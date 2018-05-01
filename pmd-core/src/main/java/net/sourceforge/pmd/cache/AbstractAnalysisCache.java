@@ -34,6 +34,8 @@ import net.sourceforge.pmd.RuleSets;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.stat.Metric;
 
+import static net.sourceforge.pmd.util.DiffMatchPatch.*;
+
 /**
  * Abstract implementation of the analysis cache. Handles all operations, except for persistence.
  */
@@ -67,11 +69,11 @@ public abstract class AbstractAnalysisCache implements AnalysisCache {
         final AnalysisResult analysisResult = fileResultsCache.get(sourceFile.getPath());
         
         // is this a known file? has it changed?
-        final boolean result = analysisResult != null
-                && analysisResult.getFileChecksum() == updatedResult.getFileChecksum();
+        final boolean isUpToDate =
+                analysisResult != null && analysisResult.getFileChecksum() == updatedResult.getFileChecksum();
 
         if (LOG.isLoggable(Level.FINE)) {
-            if (result) {
+            if (isUpToDate) {
                 LOG.fine("Incremental Analysis cache HIT");
             } else {
                 LOG.fine("Incremental Analysis cache MISS - "
@@ -79,7 +81,7 @@ public abstract class AbstractAnalysisCache implements AnalysisCache {
             }
         }
 
-        return result;
+        return isUpToDate;
     }
 
     @Override
@@ -92,6 +94,21 @@ public abstract class AbstractAnalysisCache implements AnalysisCache {
         }
 
         return analysisResult.getViolations();
+    }
+
+    public List<Patch> getPatches(final File sourceFile) {
+        final AnalysisResult analysisResult = fileResultsCache.get(sourceFile.getPath());
+        if (analysisResult == null) {
+            return Collections.emptyList();
+        }
+        return analysisResult.getPatches();
+    }
+
+    public void setPatches(final File sourceFile, final List<Patch> patches) {
+        final AnalysisResult analysisResult = fileResultsCache.get(sourceFile.getPath());
+        if (analysisResult != null) {
+            analysisResult.setPatches(patches);
+        }
     }
 
     @Override

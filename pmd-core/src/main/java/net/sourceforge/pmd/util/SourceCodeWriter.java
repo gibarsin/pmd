@@ -11,8 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static net.sourceforge.pmd.util.DiffMatchPatch.*;
 
 /**
  * Utility for converting an AST to text.
@@ -35,6 +37,19 @@ public enum SourceCodeWriter {
         // TODO root.syncTokens()
         writeSourceCode(sourceCode, root);
         return sourceCode.toString();
+    }
+
+    public static void applyPatchesToOriginalSourceCodeFile(final String fileName, final Charset charset, final List<Patch> patches) throws IOException {
+        final String sourceCode = getSourceCodeFileAsString(fileName, charset);
+        final Object[] patchedSourceCodeAndResults = new DiffMatchPatch().applyPatches(patches, sourceCode);
+        final String patchedSourceCode = (String) patchedSourceCodeAndResults[0];
+
+        final Path temporaryPath = Files.createTempFile("pmd-", ".tmp");
+        try (Writer writer = Files.newBufferedWriter(temporaryPath, charset)) {
+            writer.write(patchedSourceCode);
+        }
+        final Path filePath = Paths.get(fileName);
+        Files.move(temporaryPath, filePath, REPLACE_EXISTING); // Platform-independent
     }
 
     public static String getSourceCodeFileAsString(final String fileName, final Charset charset) throws IOException {
