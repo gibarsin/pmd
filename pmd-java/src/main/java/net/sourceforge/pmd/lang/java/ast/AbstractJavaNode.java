@@ -33,8 +33,8 @@ public abstract class AbstractJavaNode extends AbstractNode implements JavaNode 
     @Override
     public void jjtOpen() {
         if (beginLine == -1 && parser.token.next != null) {
-            beginLine = parser.token.next.beginLine;
-            beginColumn = parser.token.next.beginColumn;
+            beginLine = parser.token.next.getBeginLine();
+            beginColumn = parser.token.next.getBeginColumn();
         }
     }
 

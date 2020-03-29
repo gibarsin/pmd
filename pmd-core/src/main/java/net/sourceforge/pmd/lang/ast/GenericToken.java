@@ -51,4 +51,16 @@ public interface GenericToken {
      * @return a non-negative integer containing the begin column
      */
     int getEndColumn();
+
+    void setBeginLine(int beginLine);
+
+    void setEndLine(int endLine);
+
+    void setBeginColumn(int beginColumn);
+
+    void setEndColumn(int endColumn);
+
+    void setNext(GenericToken next);
+
+    void setImage(String image);
 }

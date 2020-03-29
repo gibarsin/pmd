@@ -14,6 +14,7 @@ import net.sourceforge.pmd.lang.Language;
 import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.lang.ParserOptions;
 import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.rule.fix.RuleViolationFix;
 import net.sourceforge.pmd.properties.AbstractPropertySource;
 import net.sourceforge.pmd.properties.PropertyDescriptor;
 
@@ -357,6 +358,12 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, this.getMessage(), null);
     }
 
+    public void addViolation(Object data, Node node, RuleViolationFix rvf) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, this.getMessage(), null, rvf);
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
@@ -365,6 +372,12 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
                 this, node, this.getMessage(), new Object[]{arg});
+    }
+
+    public void addViolation(Object data, Node node, String arg, RuleViolationFix rvf) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, this.getMessage(), new Object[]{arg}, rvf);
     }
 
     /**
@@ -377,6 +390,12 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, this.getMessage(), args);
     }
 
+    public void addViolation(Object data, Node node, Object[] args, RuleViolationFix rvf) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, this.getMessage(), args, rvf);
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
@@ -385,6 +404,12 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
                 this, node, message, null);
+    }
+
+    public void addViolationWithMessage(Object data, Node node, String message, RuleViolationFix rvf) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, message, null, rvf);
     }
 
     /**
@@ -397,11 +422,23 @@ public abstract class AbstractRule extends AbstractPropertySource implements Rul
                 this, node, message, beginLine, endLine, null);
     }
 
+    public void addViolationWithMessage(Object data, Node node, String message, int beginLine, int endLine, RuleViolationFix rvf) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, message, beginLine, endLine, null);
+    }
+
     /**
      * @see RuleViolationFactory#addViolation(RuleContext, Rule, Node, String,
      * Object[])
      */
     public void addViolationWithMessage(Object data, Node node, String message, Object[] args) {
+        RuleContext ruleContext = (RuleContext) data;
+        ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
+                this, node, message, args);
+    }
+
+    public void addViolationWithMessage(Object data, Node node, String message, Object[] args, RuleViolationFix rvf) {
         RuleContext ruleContext = (RuleContext) data;
         ruleContext.getLanguageVersion().getLanguageVersionHandler().getRuleViolationFactory().addViolation(ruleContext,
                 this, node, message, args);

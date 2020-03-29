@@ -52,8 +52,11 @@ public class BigIntegerInstantiationRule extends AbstractJavaRule {
                     img = img.substring(1, img.length() - 1);
                 }
 
-                if ("0".equals(img) || "1".equals(img) || jdk15 && "10".equals(img)) {
-                    addViolation(data, node);
+                if ("0".equals(img) || "1".equals(img)) {
+                    addViolation(data, node, new BigIntegerInstantiationFix(node)::fixZeroOrOne);
+                    return data;
+                } else if (jdk15 && "10".equals(img)) {
+                    addViolation(data, node, new BigIntegerInstantiationFix(node)::fixTen);
                     return data;
                 }
             }

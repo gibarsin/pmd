@@ -64,6 +64,36 @@ public class AntlrToken implements GenericToken {
         return token.getCharPositionInLine() + token.getStopIndex() - token.getStartIndex();
     }
 
+    @Override
+    public void setBeginLine(int beginLine) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setEndLine(int endLine) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBeginColumn(int beginColumn) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setEndColumn(int endColumn) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNext(GenericToken token) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setImage(String image) {
+        throw new UnsupportedOperationException();
+    }
+
     public int getType() {
         return token.getType();
     }

@@ -13,6 +13,8 @@ public class DummyNode extends AbstractNode {
 
     public DummyNode(int id) {
         this(id, false);
+        firstToken = new DatumToken();
+        lastToken = firstToken;
     }
     
     public DummyNode(int id, boolean findBoundary) {

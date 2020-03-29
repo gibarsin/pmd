@@ -28,6 +28,7 @@ import net.sourceforge.pmd.lang.Language;
 import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.rule.RuleReference;
+import net.sourceforge.pmd.lang.rule.fix.RuleViolationFixProcessor;
 import net.sourceforge.pmd.util.filter.Filter;
 import net.sourceforge.pmd.util.filter.Filters;
 
@@ -564,6 +565,8 @@ public class RuleSet implements ChecksumAware {
                         } else {
                             throw e;
                         }
+                    } finally {
+                        RuleViolationFixProcessor.getInstance().process();
                     }
                 }
             }

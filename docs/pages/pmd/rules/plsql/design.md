@@ -193,9 +193,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|100.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|100|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -206,7 +204,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessiveMethodLength">
     <properties>
-        <property name="minimum" value="100.0" />
+        <property name="minimum" value="100" />
     </properties>
 </rule>
 ```
@@ -249,9 +247,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1000.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1000|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -262,7 +258,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessiveObjectLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="1000" />
     </properties>
 </rule>
 ```
@@ -305,9 +301,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1000.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1000|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -318,7 +312,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessivePackageBodyLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="1000" />
     </properties>
 </rule>
 ```
@@ -354,9 +348,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1000.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1000|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -367,7 +359,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessivePackageSpecificationLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="1000" />
     </properties>
 </rule>
 ```
@@ -405,9 +397,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|10.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|10|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -418,7 +408,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessiveParameterList">
     <properties>
-        <property name="minimum" value="10.0" />
+        <property name="minimum" value="10" />
     </properties>
 </rule>
 ```
@@ -461,9 +451,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1000.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1000|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -474,7 +462,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/ExcessiveTypeLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="1000" />
     </properties>
 </rule>
 ```
@@ -506,9 +494,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|100.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|100|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -519,7 +505,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/NcssMethodCount">
     <properties>
-        <property name="minimum" value="100.0" />
+        <property name="minimum" value="100" />
     </properties>
 </rule>
 ```
@@ -553,9 +539,7 @@ lines of code that are split are counted as one.
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1500.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1500|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -566,7 +550,7 @@ lines of code that are split are counted as one.
 ``` xml
 <rule ref="category/plsql/design.xml/NcssObjectCount">
     <properties>
-        <property name="minimum" value="1500.0" />
+        <property name="minimum" value="1500" />
     </properties>
 </rule>
 ```
@@ -624,9 +608,7 @@ END;{%endraw%}
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|200.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|200|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -637,7 +619,7 @@ END;{%endraw%}
 ``` xml
 <rule ref="category/plsql/design.xml/NPathComplexity">
     <properties>
-        <property name="minimum" value="200.0" />
+        <property name="minimum" value="200" />
     </properties>
 </rule>
 ```

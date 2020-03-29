@@ -12,6 +12,8 @@ import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.rule.fix.RuleViolationFix;
+import net.sourceforge.pmd.lang.rule.fix.RuleViolationFixProcessor;
 
 public abstract class AbstractRuleViolationFactory implements RuleViolationFactory {
 
@@ -38,6 +40,12 @@ public abstract class AbstractRuleViolationFactory implements RuleViolationFacto
     }
 
     @Override
+    public void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, Object[] args, RuleViolationFix rvf) {
+        addViolation(ruleContext, rule, node, message, args);
+        RuleViolationFixProcessor.getInstance().addRuleViolationFix(rvf);
+    }
+
+    @Override
     public void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, int beginLine, int endLine,
             Object[] args) {
 
@@ -45,6 +53,13 @@ public abstract class AbstractRuleViolationFactory implements RuleViolationFacto
 
         ruleContext.getReport()
                 .addRuleViolation(createRuleViolation(rule, ruleContext, node, formattedMessage, beginLine, endLine));
+    }
+
+    @Override
+    public void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, int beginLine, int endLine,
+                             Object[] args, RuleViolationFix rvf) {
+        addViolation(ruleContext, rule, node, message, beginLine, endLine, args);
+        RuleViolationFixProcessor.getInstance().addRuleViolationFix(rvf);
     }
 
     protected abstract RuleViolation createRuleViolation(Rule rule, RuleContext ruleContext, Node node, String message);

@@ -252,7 +252,23 @@ public abstract class AbstractNode implements Node {
             jjtSetParent(null);
         }
 
-        // TODO [autofix]: Notify action for handling text edition
+        //Ignore this subtree's tokens when skimming through all the tokens to print the file
+        jjtGetFirstToken().setImage("");
+        jjtGetFirstToken().setNext(jjtGetLastToken().getNext());
+    }
+
+    public void beReplacedBy(final AbstractNode node) {
+        // Detach current node of its parent, if any
+        final Node parent = jjtGetParent();
+        if (parent != null) {
+            parent.removeChildAtIndex(jjtGetChildIndex());
+            parent.jjtAddChild(node, jjtGetChildIndex());
+            jjtSetParent(null);
+        }
+
+        jjtGetFirstToken().setImage("");
+        jjtGetFirstToken().setNext(node.jjtGetFirstToken());
+        node.jjtGetFirstToken().setNext(jjtGetLastToken().getNext());
     }
 
     @Override

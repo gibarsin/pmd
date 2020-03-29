@@ -7,6 +7,7 @@ package net.sourceforge.pmd.lang.rule;
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.rule.fix.RuleViolationFix;
 
 /**
  * This class handles of producing a Language specific RuleViolation and adding
@@ -29,6 +30,11 @@ public interface RuleViolationFactory {
      */
     void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, Object[] args);
 
+    void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, Object[] args, RuleViolationFix rvf);
+
     void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, int beginLine, int endLine,
             Object[] args);
+
+    void addViolation(RuleContext ruleContext, Rule rule, Node node, String message, int beginLine, int endLine,
+            Object[] args, RuleViolationFix rvf);
 }

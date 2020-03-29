@@ -68,9 +68,7 @@ The template is too long. It should be broken up into smaller pieces.
 
 |Name|Default Value|Description|Multivalued|
 |----|-------------|-----------|-----------|
-|topscore||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Top score value|no|
-|minimum|1000.0|Minimum reporting threshold|no|
-|sigma||<span style="border-radius: 0.25em; color: #fff; padding: 0.2em 0.6em 0.3em; display: inline; background-color: #d9534f; font-size: 75%;">Deprecated</span>  Sigma value|no|
+|minimum|1000|Threshold above which a node is reported|no|
 
 **Use this rule with the default properties by just referencing it:**
 ``` xml
@@ -81,7 +79,7 @@ The template is too long. It should be broken up into smaller pieces.
 ``` xml
 <rule ref="category/vm/design.xml/ExcessiveTemplateLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="1000" />
     </properties>
 </rule>
 ```

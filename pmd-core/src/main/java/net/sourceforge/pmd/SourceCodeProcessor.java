@@ -17,6 +17,8 @@ import net.sourceforge.pmd.benchmark.TimedOperationCategory;
 import net.sourceforge.pmd.internal.RulesetStageDependencyHelper;
 import net.sourceforge.pmd.lang.LanguageVersion;
 import net.sourceforge.pmd.lang.Parser;
+import net.sourceforge.pmd.lang.ast.AbstractNode;
+import net.sourceforge.pmd.lang.ast.GenericToken;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.ast.ParseException;
 import net.sourceforge.pmd.lang.ast.RootNode;
@@ -157,9 +159,35 @@ public class SourceCodeProcessor {
 
         List<Node> acus = Collections.singletonList(rootNode);
         ruleSets.apply(acus, ctx, languageVersion.getLanguage());
+
+        print((AbstractNode) acus.get(0));
     }
 
+    void print(final AbstractNode node) {
+        final StringBuilder file = new StringBuilder();
+        GenericToken currToken = node.jjtGetFirstToken();
+        do {
+            file.append(getSpecialTokens(currToken));
+            file.append(currToken.getImage());
+            currToken = currToken.getNext();
+        } while (currToken != null);
+        System.out.println(file);
+    }
 
+    private String getSpecialTokens(final GenericToken token) {
+        final StringBuilder specialTokenFile = new StringBuilder();
+        GenericToken currSpecialToken = token.getPreviousComment();
+        if (currSpecialToken != null) {
+            while (currSpecialToken.getPreviousComment() != null) {
+                currSpecialToken = currSpecialToken.getPreviousComment();
+            }
+        }
+        while (currSpecialToken != null) {
+            specialTokenFile.append(currSpecialToken.getImage());
+            currSpecialToken = currSpecialToken.getNext();
+        }
+        return specialTokenFile.toString();
+    }
 
 
     private void determineLanguage(RuleContext ctx) {
